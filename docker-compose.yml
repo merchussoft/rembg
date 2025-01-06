@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    container_name: api_rembg
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_ENV=development
+    networks:
+      - api_rembg_network
+networks:
+  api_rembg_network:
+    driver: bridge
