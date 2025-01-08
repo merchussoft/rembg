@@ -10,13 +10,13 @@ services:
       - 5000:5000
     volumes:
       - .:/app
-    environment:
-      - FLASK_ENV=development
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5" # Limitar al 50% de un nucleo
-          memory: "512M" # limitar a 512Mb de ram
+#    environment:
+#      - FLASK_ENV=development
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "0.5" # Limitar al 50% de un nucleo
+#          memory: "512M" # limitar a 512Mb de ram
     networks:
       - api_rembg_network
 networks:
