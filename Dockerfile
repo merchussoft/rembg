@@ -1,7 +1,10 @@
 # se usa la imagen de python
 FROM python:3.12-slim
 
-
+# Instala dependencias necesarias para rembg
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 \
+    && rm -rf /var/lib/apt/lists/*
 ## establecemos el directorio de trabajo en el contenedor
 WORKDIR /app
 

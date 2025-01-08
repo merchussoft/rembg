@@ -3,6 +3,7 @@ from flask_cors import CORS
 from rembg import remove
 import os
 from datetime import datetime
+import gc # Para liberar memoria despues de cada solicitud
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg'}
 
@@ -70,8 +71,15 @@ def removeBacklground():
         return send_file(output_path, mimetype='image/png')
     except Exception as e:
         return jsonify({ "error": str(e) }), 500
+    finally:
+        gc.collect() #Liberar memoria despues de cada solicitud
 
+
+# Ruta para probar la conexión
+@app.route('/ping', methods=['GET'])
+def ping():
+    return jsonify({"message": "Server is running!"}), 200
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
