@@ -7,12 +7,13 @@ pipeline {
     }
 
     stages {
-        stage('Build Docker Image') {
+        stage('limpiar-archivos-yu-directorios-antiguos') {
             steps {
                 script{
                     sh '''
-                        echo "Building Docker image..."
-                        docker build -t $IMAGENAME .
+                        // Encuentra y borra archivos y directorios anteriores a 7 dias en el workspace del jenkins"
+                        find $WORKSPACE -type f -mtime +7 -exec rm -f {} +
+                        find $WORKSPACE -type f -mtime +7 -exec rm -rf {} +
                     '''
                 }
                 
@@ -24,9 +25,7 @@ pipeline {
                 scripts {
                     sh '''
                         echo "Stopping and removing old container (if exists)..."
-                        docker-compose down
-                        docker stop $CONTAINER_NAME || true
-                        docker rm $CONTAINER_NAME || true
+                        docker-compose down | true
 
                         echo "Starting new container with Docker Compose..."
                         docker-compose up --build -d
