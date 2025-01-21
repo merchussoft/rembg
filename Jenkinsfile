@@ -7,19 +7,6 @@ pipeline {
     }
 
     stages {
-        stage('limpiar-archivos-yu-directorios-antiguos') {
-            steps {
-                script{
-                    sh '''
-                        echo "Encuentra y borra archivos y directorios anteriores a 7 dias en el workspace del jenkins"
-                        find $WORKSPACE -type f -mtime +7 -exec rm -f {} +
-                        find $WORKSPACE -type f -mtime +7 -exec rm -rf {} +
-                    '''
-                }
-                
-            }
-        }
-
         stage('Deploy Docker Container') {
             steps {
                 scripts {
