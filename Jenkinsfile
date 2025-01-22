@@ -68,7 +68,11 @@ pipeline {
 
     post {
         success {
-            echo "Pipeline completed successfully! The application has been deployed."
+            slackSend(
+                channel: '#rembg_jenkins', 
+                color: 'good', 
+                message: "✅ Pipeline '${env.JOB_NAME} [${env.BUILD_NUMBER}]' completado con éxito."
+            )
         }
         failure {
             echo "Pipeline failed! The application has not been deployed."

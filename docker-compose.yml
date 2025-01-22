@@ -17,8 +17,8 @@ services:
 #        limits:
 #          cpus: "0.5" # Limitar al 50% de un nucleo
 #          memory: "512M" # limitar a 512Mb de ram
-    networks:
-      - api_rembg_network
-networks:
-  api_rembg_network:
-    driver: bridge
+#    networks:
+#      - api_rembg_network
+#networks:
+#  api_rembg_network:
+#    driver: bridge
