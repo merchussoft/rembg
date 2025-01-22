@@ -1,47 +1,35 @@
 pipeline {
     agent any
-
-    environment {
+    tools {
+        maven 'Maven'
+    }
+	
+	environment {
         SONAR_HOST_URL = 'http://192.168.1.50:9000' // Cambia <SONARQUBE_SERVER> por la dirección de tu servidor SonarQube
         SONAR_AUTH_TOKEN = credentials('SONAR_AUTH_TOKEN') // ID del token almacenado en Jenkins Credentials
     }
 
     stages {
-        stage('Chechout Code') {
+        stage('Git Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/merchussoft/rembg'
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/ZudaPradana/sonar']])
+                echo 'Git Checkout Completed'
             }
         }
 
-        stage('Sonaquebe analysis') {
+        stage('SonarQube Analysis') {
             steps {
-                script {
-                    try {
-                        // Ejecutar el analisis del sonarqube
-                        sh '''
-                        sonar-scanner \
-                            -Dsonar.projectKey=rembg \
-                            -Dsonar.projectName=rembg \
-                            -Dsonar.sources=/var/jenkins_home/workspace/rembg \
-                            -Dsonar.projectVersion=1.0 \
-                            -Dsonar.sourceEncoding=UTF-8 \
-                            -Dsonar.host.url=${SONAR_HOST_URL} \
-                            -Dsonar.login=${SONAR_AUTH_TOKEN}
-                        '''
-                    } catch (Exception e) {
-                        error("SonarQube Analysis Failed: ${e}")
-                    }
+                withSonarQubeEnv('ServerNameSonar') {
+                    bat '''
+					mvn clean verify sonar:sonar \
+						-Dsonar.projectKey=ProjectNameSonar \
+						-Dsonar.projectName='ProjectNameSonar' \
+						-Dsonar.host.url=${SONAR_HOST_URL} \
+                         -Dsonar.login=${SONAR_AUTH_TOKEN}
+					'''
+                    echo 'SonarQube Analysis Completed'
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo "Pipeline completed successfully! The application has been deployed."
-        }
-        failure {
-            echo "Pipeline failed! The application has not been deployed."
         }
     }
 }
