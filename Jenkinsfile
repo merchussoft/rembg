@@ -20,7 +20,10 @@ pipeline {
                     sh '''
                     sonar-scanner \
                         -Dsonar.projectKey=rembg \
-                        -Dsonar.sources=. \
+                        -Dsonar.projectName=rembg \
+                        -Dsonar.sources=/var/jenkins_home/workspace/rembg \
+                        -Dsonar.projectVersion=1.0 \
+                        -Dsonar.sourceEncoding=UTF-8 \
                         -Dsonar.host.url=${SONAR_HOST_URL} \
                         -Dsonar.login=${SONAR_AUTH_TOKEN}
                     '''
