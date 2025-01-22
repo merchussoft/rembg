@@ -62,25 +62,16 @@ pipeline {
             }
             steps {
                 sh 'docker compose up -d'
-                echo 'Application Deployed to Production'
             }
         }
     }
 
     post {
         success {
-            sh '''
-                curl -X POST -H 'Content-type: application/json' \
-                -d '{"context":"✅ pipeline '${env.JOB_NAME} [${ENV.BUILD_NUMBER}]' completado con exito"}' \
-                $REMBG_DISCOD    
-            '''
+            echo "Pipeline completed successfully! The application has been deployed."
         }
         failure {
-           sh '''
-                curl -X POST -H "Content-Type: application/json" \
-                -d '{"content": "❌ Pipeline '${env.JOB_NAME} [${env.BUILD_NUMBER}]' falló. Revisa los logs."}' \
-                $REMBG_DISCOD
-            '''
+            echo "Pipeline failed! The application has not been deployed."
         }
     }
 }
