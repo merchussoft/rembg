@@ -19,7 +19,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('ServerNameSonar') {
+                withSonarQubeEnv('SonarQubeServer') {
                     sh '''
 					mvn clean verify sonar:sonar \
 						-Dsonar.projectKey=ProjectNameSonar \
