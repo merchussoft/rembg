@@ -16,17 +16,21 @@ pipeline {
         stage('Sonaquebe analysis') {
             steps {
                 script {
-                    // Ejecutar el analisis del sonarqube
-                    sh '''
-                    sonar-scanner \
-                        -Dsonar.projectKey=rembg \
-                        -Dsonar.projectName=rembg \
-                        -Dsonar.sources=/var/jenkins_home/workspace/rembg \
-                        -Dsonar.projectVersion=1.0 \
-                        -Dsonar.sourceEncoding=UTF-8 \
-                        -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.login=${SONAR_AUTH_TOKEN}
-                    '''
+                    try {
+                        // Ejecutar el analisis del sonarqube
+                        sh '''
+                        sonar-scanner \
+                            -Dsonar.projectKey=rembg \
+                            -Dsonar.projectName=rembg \
+                            -Dsonar.sources=/var/jenkins_home/workspace/rembg \
+                            -Dsonar.projectVersion=1.0 \
+                            -Dsonar.sourceEncoding=UTF-8 \
+                            -Dsonar.host.url=${SONAR_HOST_URL} \
+                            -Dsonar.login=${SONAR_AUTH_TOKEN}
+                        '''
+                    } catch (Exception e) {
+                        error("SonarQube Analysis Failed: ${e}")
+                    }
                 }
             }
         }
