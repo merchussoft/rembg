@@ -9,14 +9,13 @@ pipeline {
     }
 
     stages {
-
-        stage('check Docker info'){
+        stage('Clean') {
             steps {
-                sh 'docker compose down -v'
+                sh 'mvn clean'
+                echo 'Clean Completed'
             }
         }
-
-
+        
         stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/merchussoft/rembg.git'
@@ -48,19 +47,11 @@ pipeline {
                 }
             }
             steps {
-                sh 'docker compose build'
-            }
-        }
-
-        stage('deploy a produccion') {
-            when {
-                expression {
-                    // solo se ejecuta si la etapa anterior pasa
-                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
-                }
-            }
-            steps {
-                sh 'docker compose up --build -d'
+                sh '''
+                    docker compose down -v
+                    docker compose build
+                    docker compose up --build -d
+                '''
             }
         }
     }
