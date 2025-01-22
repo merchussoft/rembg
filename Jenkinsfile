@@ -44,7 +44,7 @@ pipeline {
                 sh '''
                     docker compose down
                     docker compose build
-                    docker compose up --build -d
+                    docker compose up -d
                 '''
             }
         }
