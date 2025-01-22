@@ -5,8 +5,7 @@ pipeline {
     }
 	
 	environment {
-        SONAR_HOST_URL = 'http://192.168.1.50:9000' // Cambia <SONARQUBE_SERVER> por la dirección de tu servidor SonarQube
-        SONAR_AUTH_TOKEN = credentials('SONAR_AUTH_TOKEN') // ID del token almacenado en Jenkins Credentials
+        SCANNER_HOME = tool 'sonarqube'
     }
 
     stages {
@@ -19,17 +18,27 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQubeServer') {
+                withSonarQubeEnv(credentialsId: 'sonarqube', installationName: 'sonarqube') {
                     sh '''
-					mvn clean verify sonar:sonar \
-						-Dsonar.projectKey=ProjectNameSonar \
-						-Dsonar.projectName='ProjectNameSonar' \
-						-Dsonar.host.url=${SONAR_HOST_URL} \
-                         -Dsonar.login=${SONAR_AUTH_TOKEN}
+					$SCANNER_HOME/bin/sonar-scanner \
+						-Dsonar.projectKey=rembg \
+						-Dsonar.projectName=rembg \
+                        -Dsonar.projectVersion=1.0 \
+                        -Dsonar.sources=/var/jenkins_home/workspace/rembg \
+                        -Dsonar.sourceEncoding=UTF-8
 					'''
                     echo 'SonarQube Analysis Completed'
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully! The application has been deployed."
+        }
+        failure {
+            echo "Pipeline failed! The application has not been deployed."
         }
     }
 }
