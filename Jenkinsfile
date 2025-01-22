@@ -9,7 +9,7 @@ pipeline {
     }
 
     stages {
-        
+
         stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/merchussoft/rembg.git'
@@ -42,7 +42,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    docker compose down -v
+                    docker compose down
                     docker compose build
                     docker compose up --build -d
                 '''
