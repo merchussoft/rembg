@@ -6,7 +6,6 @@ pipeline {
 	
 	environment {
         SCANNER_HOME = tool 'sonarqube'
-        REMBG_DISCOD = credentials('discord_rembg_channel')
     }
 
     stages {
@@ -61,18 +60,14 @@ pipeline {
                 }
             }
             steps {
-                sh 'docker compose up -d'
+                sh 'docker compose up --build -d'
             }
         }
     }
 
     post {
         success {
-            slackSend(
-                channel: '#rembg_jenkins', 
-                color: 'good', 
-                message: "✅ Pipeline '${env.JOB_NAME} [${env.BUILD_NUMBER}]' completado con éxito."
-            )
+            echo "Pipeline completed successfully! The application has been deployed."
         }
         failure {
             echo "Pipeline failed! The application has not been deployed."
