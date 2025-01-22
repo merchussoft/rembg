@@ -6,6 +6,7 @@ pipeline {
 	
 	environment {
         SCANNER_HOME = tool 'sonarqube'
+        REMBG_DISCOD = credentials('discord_rembg_channel')
     }
 
     stages {
@@ -48,17 +49,38 @@ pipeline {
                 }
             }
             steps {
-                sh 'docker compose up --build -d'
+                sh 'docker compose build'
+            }
+        }
+
+        stage('deploy a produccion') {
+            when {
+                expression {
+                    // solo se ejecuta si la etapa anterior pasa
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                }
+            }
+            steps {
+                sh 'docker compose up -d'
+                echo 'Application Deployed to Production'
             }
         }
     }
 
     post {
         success {
-            echo "Pipeline completed successfully! The application has been deployed."
+            sh '''
+                curl -X POST -H 'Content-type: application/json' \
+                -d '{"context":"✅ pipeline '${env.JOB_NAME} [${ENV.BUILD_NUMBER}]' completado con exito"}' \
+                $REMBG_DISCOD    
+            '''
         }
         failure {
-            echo "Pipeline failed! The application has not been deployed."
+           sh '''
+                curl -X POST -H "Content-Type: application/json" \
+                -d '{"content": "❌ Pipeline '${env.JOB_NAME} [${env.BUILD_NUMBER}]' falló. Revisa los logs."}' \
+                $REMBG_DISCOD
+            '''
         }
     }
 }
