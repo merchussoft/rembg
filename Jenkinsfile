@@ -9,12 +9,6 @@ pipeline {
     }
 
     stages {
-        stage('Clean') {
-            steps {
-                sh 'mvn clean'
-                echo 'Clean Completed'
-            }
-        }
         
         stage('Git Checkout') {
             steps {
