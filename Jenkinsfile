@@ -9,9 +9,17 @@ pipeline {
     }
 
     stages {
+
+        stage('check Docker info'){
+            steps {
+                sh 'docker compose down -v'
+            }
+        }
+
+
         stage('Git Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/merchussoft/rembg'
+                git branch: 'main', url: 'https://github.com/merchussoft/rembg.git'
                 echo 'Git Checkout Completed'
             }
         }
@@ -29,6 +37,18 @@ pipeline {
 					'''
                     echo 'SonarQube Analysis Completed'
                 }
+            }
+        }
+
+        stage('docker compose build'){
+            when {
+                expression {
+                    // solo se ejecuta si la etapa anterior pasa
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                }
+            }
+            steps {
+                sh 'docker compose up --build -d'
             }
         }
     }
