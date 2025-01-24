@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    tools {
-        maven 'Maven'
-    }
 	
 	environment {
         SCANNER_HOME = tool 'sonarqube'
@@ -33,19 +30,25 @@ pipeline {
             }
         }
 
-        stage('docker compose build'){
-            when {
-                expression {
-                    // solo se ejecuta si la etapa anterior pasa
-                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
-                }
-            }
+        stage('stop and down and eraser volumes Docker Compose') {
             steps {
-                sh '''
-                    docker compose down
-                    docker compose build
-                    docker compose up -d
-                '''
+
+                    sh '''
+                        echo "tumbando los contenedores anteriores"
+                        docker compose down -v
+                    '''
+
+            }
+        }
+
+        stage('deploy with Docker Compose') {
+            steps {
+                script {
+                    sh '''
+                        echo "desplegando la aplicaion con docker"
+                        docker compose up --build -d
+                    '''
+                }
             }
         }
     }
