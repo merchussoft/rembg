@@ -1,4 +1,8 @@
 input
 output_rembg/
+output_rembg_image/
+output_rembg_video/
 
+
+__pycache__
 app.py

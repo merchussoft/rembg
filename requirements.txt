@@ -2,5 +2,9 @@ flask
 flask-cors
 rembg
 onnxruntime
+opencv-python
+moviepy
+mediapipe
+
 
 #onnxruntime-gpu
