@@ -2,22 +2,9 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./Dockerfile
-    container_name: api_rembg
-    restart: unless-stopped
+    container_name: background-remover
+    restart: always
     ports:
-      - 5000:5000
-#    volumes:
-#      - .:/app
-#    environment:
-#      - FLASK_ENV=development
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "0.5" # Limitar al 50% de un nucleo
-#          memory: "512M" # limitar a 512Mb de ram
-#    networks:
-#      - api_rembg_network
-#networks:
-#  api_rembg_network:
-#    driver: bridge
+      - "8501:8501"
+    volumes:
+      - ./output_rembg:/app/output_rembg
