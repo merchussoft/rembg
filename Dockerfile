@@ -15,7 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Instala dependencias necesarias para rembg
-RUN apt-get update && apt-get install -y libomp-dev
+RUN apt-get update\ 
+&& apt-get install -y libomp-dev
 
 # exponemos el en el que Flask va a correr
 EXPOSE 8501

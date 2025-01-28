@@ -8,13 +8,8 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg'}
 output_folder = "output_rembg"
 
 
-##valida la extencion del archivo
-def allowedFile(filename): 
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
-
-def saveUploadedFile(uploaded_file):
+def save_uploaded_file(uploaded_file):
     today = datetime.now().strftime('%Y-%m-%d %H-%M-%S')
 
     if not os.path.exists(output_folder):
@@ -34,8 +29,8 @@ def saveUploadedFile(uploaded_file):
         f.write(uploaded_file.getbuffer())
     return original_file_path
 
-def runBackgroundRemover(input_img_file):
-    input_img_path = saveUploadedFile(input_img_file)
+def run_background_remover(input_img_file):
+    input_img_path = save_uploaded_file(input_img_file)
     output_img_path = input_img_path.replace('.', '_rmbg.').replace('jpg', 'png').replace('jpeg', 'png')
 
     try:
@@ -71,7 +66,7 @@ def main():
     st.title("Removedor de fondos")
     uploaded_file = st.file_uploader("Seleccione una imagen", type=ALLOWED_EXTENSIONS)
     if uploaded_file is not None:
-        runBackgroundRemover(uploaded_file)
+        run_background_remover(uploaded_file)
 
 
 if __name__ == '__main__':
