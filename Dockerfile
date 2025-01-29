@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Instala dependencias necesarias para rembg
-RUN --mount=tyoe=cache,target=/var/cache/apt \
+RUN --mount=type=cache,target=/var/cache/apt \
 apt-get update && apt install -y --no-install-recommends libomp-dev \ 
 && apt clean \
 && rm -rf /var/lib/apt/lists/*
