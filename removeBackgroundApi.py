@@ -81,13 +81,27 @@ def remove_background_from_video(video_path, output_folder):
         video_input = VideoFileClip(video_path)
         output_video_path = os.path.join(output_folder, os.path.splitext(os.path.basename(video_path))[0] + "_rmbg.mp4")
 
-        video_no_bg = video_input.fl_image(remove_background_video)
+        progress_bar = st.progress(0)# Iniciar barra de progreso
+
+        frame_count = int(video_input.fps * video_input.duration)
+        processed_frames = 0
+
+        def process_frame(frame):
+            nonlocal processed_frames
+            processed_frames += 1
+            progress_bar.progress(min(int((processed_frames / frame_count) * 100), 100))
+            return remove_background_video(frame)
+
+        video_no_bg = video_input.fl_image(process_frame)
         video_no_bg.write_videofile(output_video_path, fps=output_fps)
 
         return output_video_path
     except Exception as e:
         st.error(f"Error al procesar el video: {e}")
         return None
+    finally:
+        progress_bar.empty()
+
 
 
 
