@@ -7,8 +7,10 @@ WORKDIR /app
 # Copiar el archivo requirements.txt (lo crearemos más abajo)
 COPY requirements.txt requirements.txt
 
+RUN pip install --upgrade pip
+
 ## Instala las dependencias del proyecto 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --force-reinstall -r requirements.txt
 
 ## Copiamos los archivos del proyecto en el contenedor
 COPY . .
