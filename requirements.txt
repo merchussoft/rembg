@@ -1,11 +1,12 @@
 #flask
 #flask-cors
+numpy<2
 Pillow
-rembg
 streamlit
-onnxruntime
 moviepy==1.0.3
 opencv-python==4.8.0.74
+rembg
+onnxruntime
 
 
 #onnxruntime-gpu
