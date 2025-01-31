@@ -41,16 +41,18 @@ pipeline {
             steps {
                 script {
                     timeout(time: 5, unit: 'MINUTES') {
-                        def qualityGate = waitForQualityGate()
-                        def status = qualityGate.status
-                        def color = (status == 'OK') ? 'good' : 'danger'
-                        def resultText = (status == 'OK') ? '✅ *PASÓ*' : '❌ *FALLÓ*'
+                        
                         def issues = sh(
                          script: """
                             curl -s "${SONAR_URL}/api/measures/component?component=remgb&metricKeys=bugs,vulnerabilities,code_smells,coverage" | jq '.component.measures'
                          """,
                          returnStdout: true
                         ).trim()
+
+                        def qualityGate = waitForQualityGate()
+                        def status = qualityGate.status
+                        def color = (status == 'OK') ? 'good' : 'danger'
+                        def resultText = (status == 'OK') ? '✅ *PASÓ*' : '❌ *FALLÓ*'
 
                         def sumary = """🔍 *SonarQube Reporte*
                             📌 *Estado:* ${resultText}
@@ -68,6 +70,8 @@ pipeline {
                             error "⛔ Quality Gate falló en SonarQube"
                         }
                 }
+                
+
 
                 }
             }
@@ -79,6 +83,7 @@ pipeline {
                         echo "🛑 Deteniendo y eliminando contenedores anteriores..."
                         docker compose down -v
                     '''
+
             }
         }
 
