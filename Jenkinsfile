@@ -67,7 +67,7 @@ pipeline {
             steps {
 
                 sh '''
-                    echo "🛑 Deteniendo y eliminando contenedores anteriores..."
+                    echo "Deteniendo y eliminando contenedores anteriores..."
                     docker compose down -v
                 '''
 
@@ -78,7 +78,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "🚀 Desplegando la aplicación con Docker..."
+                        echo "Desplegando la aplicación con Docker..."
                         docker compose up --build -d
                     '''
                 }
