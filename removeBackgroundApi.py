@@ -39,8 +39,6 @@ def save_uploaded_file(uploaded_file, folder):
 def run_background_remover(input_img_file):
     """ procesa imagenes eliminado el fondo con rembg """
     input_img_path, output_folder = save_uploaded_file(input_img_file, IMAGE_OUTPUT_FOLDER)
-    ##output_img_path = input_img_path.replace('.', '_rmbg.').replace('jpg', 'png').replace('jpeg', 'png')
-
     output_img_path = os.path.join(output_folder, os.path.splitext(input_img_file.name)[0] + "_rmbg.png")
 
     try:
