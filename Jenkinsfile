@@ -38,62 +38,37 @@ pipeline {
         }
 
         stage("Esperar Quality Gate SonarQube") {
-    steps {
-        script {
-            timeout(time: 5, unit: 'MINUTES') {
+            steps {
+                script {
+                    timeout(time: 5, unit: 'MINUTES') {
+                        def qualityGate = waitForQualityGate()
+                        def status = qualityGate.status
+                        def color = (status == 'OK') ? 'good' : 'danger'
+                        def resultText = (status == 'OK') ? '✅ *PASÓ*' : '❌ *FALLÓ*'
 
-                // Obtener métricas de SonarQube
-                def issuesJson = sh(
-                    script: """
-                        curl -s "${SONAR_URL}/api/measures/component?component=remgb&metricKeys=bugs,vulnerabilities,code_smells,coverage"
-                    """,
-                    returnStdout: true
-                ).trim()
+                        def sumary = """🔍 *SonarQube Reporte*
+                            📌 *Estado:* ${resultText}
+                            🚦 *Quality Gate:* ${status}
+                            🔗 *Ver detalles:* <${SONAR_URL}/dashboard?id=${env.JOB_NAME}|Click aqui>
+                        """
 
-                // Parsear el JSON con JsonSlurper
-                def parsedIssues = new groovy.json.JsonSlurper().parseText(issuesJson)
+                        slackSend(color: color, message: sumary)
 
-                // Extraer valores de las métricas
-                def bugs = parsedIssues.component.measures.find { it.metric == 'bugs' }?.value ?: 0
-                def vulnerabilities = parsedIssues.component.measures.find { it.metric == 'vulnerabilities' }?.value ?: 0
-                def codeSmells = parsedIssues.component.measures.find { it.metric == 'code_smells' }?.value ?: 0
-                def coverage = parsedIssues.component.measures.find { it.metric == 'coverage' }?.value ?: "0"
-
-                // Esperar resultado de Quality Gate
-                def qualityGate = waitForQualityGate()
-                def status = qualityGate.status
-                def color = (status == 'OK') ? 'good' : 'danger'
-                def resultText = (status == 'OK') ? '✅ *PASÓ*' : '❌ *FALLÓ*'
-
-                // Construcción del mensaje de Slack
-                def summary = """🔍 *SonarQube Reporte*
-                    📌 *Estado:* ${resultText}
-                    🐞 *Bugs:* ${bugs}
-                    🔓 *Vulnerabilidades:* ${vulnerabilities}
-                    ⚠️ *Code Smells:* ${codeSmells}
-                    📊 *Coverage:* ${coverage}%
-                    🚦 *Quality Gate:* ${status}
-                    🔗 *Ver detalles:* <${SONAR_URL}/dashboard?id=remgb|Click aquí>
-                """
-
-                // Enviar notificación a Slack
-                slackSend(color: color, message: summary)
-
-                // Si Quality Gate falló, detener el pipeline
-                if (status != 'OK') {
-                    error "⛔ Quality Gate falló en SonarQube"
+                        if (status != 'OK') {
+                            error "⛔ Quality Gate falló en SonarQube"
+                        }
+                    }
                 }
             }
         }
-    }
-}
 
         stage('stop and down and eraser volumes Docker Compose') {
             steps {
-                    sh '''
-                        echo "🛑 Deteniendo y eliminando contenedores anteriores..."
-                        docker compose down -v
-                    '''
+
+                sh '''
+                    echo "🛑 Deteniendo y eliminando contenedores anteriores..."
+                    docker compose down -v
+                '''
 
             }
         }
