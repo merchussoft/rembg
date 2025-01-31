@@ -3,7 +3,7 @@ pipeline {
 	
 	environment {
         SCANNER_HOME = tool 'sonarqube'
-        SONAR_URL = "http://tu-sonarqube.com"  // Reemplázalo con tu URL
+        SONAR_URL = "http://192.168.1.50:9000"  // Reemplázalo con tu URL
     }
 
     stages {
@@ -45,9 +45,19 @@ pipeline {
                         def status = qualityGate.status
                         def color = (status == 'OK') ? 'good' : 'danger'
                         def resultText = (status == 'OK') ? '✅ *PASÓ*' : '❌ *FALLÓ*'
+                        def issues = sh(
+                         script: """
+                            curl -s "${SONAR_URL}/api/measures/component?component=remgb&metricKeys=bugs,vulnerabilities,code_smells,coverage" | jq '.component.measures'
+                         """,
+                         returnStdout: true
+                        ).trim()
 
                         def sumary = """🔍 *SonarQube Reporte*
                             📌 *Estado:* ${resultText}
+                            *Bugs:* $(echo $issues | jq -r '.[0].value')
+                            *Vulnerabilidades:* $(echo $issues | jq -r '.[1].value')
+                            *Code Smells:* $(echo $issues | jq -r '.[2].value')
+                            *Coverage:* $(echo $issues | jq -r '.[3].value')% 
                             🚦 *Quality Gate:* ${status}
                             🔗 *Ver detalles:* <${SONAR_URL}/dashboard?id=rembg|Click aqui>
                         """
@@ -55,11 +65,9 @@ pipeline {
                         slackSend(color: color, message: sumary)
 
                         if (status != 'OK') {
-                            slackSend(color: color, message: '❌ *Quality Gate NO PASÓ* - Se ha detenido la ejecución del pipeline')
+                            error "⛔ Quality Gate falló en SonarQube"
                         }
                 }
-                
-
 
                 }
             }
@@ -67,12 +75,10 @@ pipeline {
 
         stage('stop and down and eraser volumes Docker Compose') {
             steps {
-
                     sh '''
                         echo "🛑 Deteniendo y eliminando contenedores anteriores..."
                         docker compose down -v
                     '''
-
             }
         }
 
