@@ -7,6 +7,12 @@ pipeline {
 
     stages {
 
+        stage('notificacion slack') {
+            steps {
+                slackSend channel: '#rembg_jenkins', color: 'good', message: 'Se ha iniciado el pipeline de rembg'
+            }
+        }
+
         stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/merchussoft/rembg.git'
