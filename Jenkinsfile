@@ -60,11 +60,21 @@ pipeline {
     }
 
     post {
-        success {
-            echo "Pipeline completed successfully! The application has been deployed."
-        }
-        failure {
-            echo "Pipeline failed! The application has not been deployed."
+        always {
+            script {
+                def color = (currentBuild.result == 'SUCCESS') ? 'good' : 'danger'
+                def status = (currentBuild.result == 'SUCCESS') ? '✅ ÉXITO' : '❌ FALLÓ'
+                def summary = """*${status}*
+                    *Job:* ${env.JOB_NAME}
+                    *Build Number:* ${env.BUILD_NUMBER}
+                    *Branch:* ${env.BRANCH_NAME}
+                    *Commit:* ${env.GIT_COMMIT}
+                    *Ejecutado por:* ${env.USER}
+                    *Ver detalles:* <${env.BUILD_URL}|Click aqui>
+                """
+
+                slackSend(color: color, message: summary)
+            }
         }
     }
 }
