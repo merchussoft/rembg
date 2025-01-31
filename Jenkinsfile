@@ -67,9 +67,9 @@ pipeline {
                 def summary = """*${status}*
                     *Job:* ${env.JOB_NAME}
                     *Build Number:* ${env.BUILD_NUMBER}
-                    *Branch:* ${env.BRANCH_NAME}
+                    *Branch:* ${env.GIT_BRANCH}
                     *Commit:* ${env.GIT_COMMIT}
-                    *Ejecutado por:* ${env.USER}
+                    *Ejecutado por:* ${env.BUILD_USER}
                     *Ver detalles:* <${env.BUILD_URL}|Click aqui>
                 """
 
