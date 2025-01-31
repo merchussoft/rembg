@@ -3,20 +3,21 @@ pipeline {
 	
 	environment {
         SCANNER_HOME = tool 'sonarqube'
+        SONAR_URL = "http://tu-sonarqube.com"  // Reemplázalo con tu URL
     }
 
     stages {
 
         stage('notificacion slack') {
             steps {
-                slackSend color: 'good', message: 'Se ha iniciado el pipeline de rembg'
+                slackSend(color: 'good', message: '🚀 *Pipeline Iniciado* - Se ha iniciado la ejecución del pipeline para *rembg*')
             }
         }
 
         stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/merchussoft/rembg.git'
-                echo 'Git Checkout Completed'
+                echo '✅ Git Checkout Completado'
             }
         }
 
@@ -31,7 +32,35 @@ pipeline {
                         -Dsonar.sources=/var/jenkins_home/workspace/rembg \
                         -Dsonar.sourceEncoding=UTF-8
 					'''
-                    echo 'SonarQube Analysis Completed'
+                    echo '✅ Análisis SonarQube Completado'
+                }
+            }
+        }
+
+        stage("Esperar Quality Gate SonarQube") {
+            steps {
+                script {
+                    timeout(time: 5, unit: 'MINUTES') {
+                        def qualityGate = waitForQualityGate()
+                        def status = qualityGate.status
+                        def color = (status == 'OK') ? 'good' : 'danger'
+                        def resultText = (status == 'OK') ? '✅ *PASÓ*' : '❌ *FALLÓ*'
+
+                        def sumary = """🔍 *SonarQube Reporte*
+                            📌 *Estado:* ${resultText}
+                            🚦 *Quality Gate:* ${status}
+                            🔗 *Ver detalles:* <${SONAR_URL}/dashboard?id=rembg|Click aqui>
+                        """
+
+                        slackSend(color: color, message: sumary)
+
+                        if (status != 'OK') {
+                            slackSend(color: color, message: '❌ *Quality Gate NO PASÓ* - Se ha detenido la ejecución del pipeline')
+                        }
+                }
+                
+
+
                 }
             }
         }
@@ -40,7 +69,7 @@ pipeline {
             steps {
 
                     sh '''
-                        echo "tumbando los contenedores anteriores"
+                        echo "🛑 Deteniendo y eliminando contenedores anteriores..."
                         docker compose down -v
                     '''
 
@@ -51,7 +80,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "desplegando la aplicaion con docker"
+                        echo "🚀 Desplegando la aplicación con Docker..."
                         docker compose up --build -d
                     '''
                 }
@@ -65,12 +94,12 @@ pipeline {
                 def color = (currentBuild.result == 'SUCCESS') ? 'good' : 'danger'
                 def status = (currentBuild.result == 'SUCCESS') ? '✅ ÉXITO' : '❌ FALLÓ'
                 def summary = """*${status}*
-                    *Job:* ${env.JOB_NAME}
-                    *Build Number:* ${env.BUILD_NUMBER}
-                    *Branch:* ${env.GIT_BRANCH}
-                    *Commit:* ${env.GIT_COMMIT}
-                    *Ejecutado por:* ${env.BUILD_USER}
-                    *Ver detalles:* <${env.BUILD_URL}|Click aqui>
+                    📌 *Job:* ${env.JOB_NAME}
+                    🔢 *Build Number:* ${env.BUILD_NUMBER}
+                    🌿 *Branch:* ${env.GIT_BRANCH}
+                    🔗 *Commit:* ${env.GIT_COMMIT}
+                    👤 *Ejecutado por:* ${env.BUILD_USER}
+                    🔗 *Ver detalles:* <${env.BUILD_URL}|Click aqui>
                 """
 
                 slackSend(color: color, message: summary)
