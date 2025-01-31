@@ -9,7 +9,7 @@ pipeline {
 
         stage('notificacion slack') {
             steps {
-                slackSend channel: '#rembg_jenkins', color: 'good', message: 'Se ha iniciado el pipeline de rembg'
+                slackSend color: 'good', message: 'Se ha iniciado el pipeline de rembg'
             }
         }
 
