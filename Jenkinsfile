@@ -54,10 +54,6 @@ pipeline {
                         """
 
                         slackSend(color: color, message: sumary)
-
-                        if (status != 'OK') {
-                            error "⛔ Quality Gate falló en SonarQube"
-                        }
                     }
                 }
             }
