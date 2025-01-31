@@ -14,8 +14,8 @@ COPY requirements.txt .
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ffmpeg \
-        libglib2.0-0 \
         libgl1-mesa-glx \
+        libglib2.0-0 \
         libomp-dev \
         libsm6 \
         libxext6 && \
