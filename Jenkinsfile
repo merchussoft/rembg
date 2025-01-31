@@ -55,13 +55,13 @@ pipeline {
                         def resultText = (status == 'OK') ? '✅ *PASÓ*' : '❌ *FALLÓ*'
 
                         def sumary = """🔍 *SonarQube Reporte*
-                            📌 *Estado:* ${resultText}
+                            📌 *Estado:* $resultText
                             *Bugs:* $(echo $issues | jq -r '.[0].value')
                             *Vulnerabilidades:* $(echo $issues | jq -r '.[1].value')
                             *Code Smells:* $(echo $issues | jq -r '.[2].value')
                             *Coverage:* $(echo $issues | jq -r '.[3].value')% 
-                            🚦 *Quality Gate:* ${status}
-                            🔗 *Ver detalles:* <${SONAR_URL}/dashboard?id=rembg|Click aqui>
+                            🚦 *Quality Gate:* $status
+                            🔗 *Ver detalles:* <$SONAR_URL/dashboard?id=rembg|Click aqui>
                         """
 
                         slackSend(color: color, message: sumary)
